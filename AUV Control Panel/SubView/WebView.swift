@@ -19,67 +19,79 @@ struct Camera_WebView : View {
     @State var viewModel = ViewModel()
     var cleanUI = false
     var body: some View {
-        WebView(ip: "http://\(settings.cam_ip)")
+        let web = WebView(ip: "http://\(settings.cam_ip)")
+            .scaledToFit()
             .clipShape(RoundedRectangle(cornerRadius: 33))
             .disabled(true)
-            .overlay(alignment: .bottomTrailing, content: {
-                HStack{
-                    Menu(content: {
-                        Button("custom"){
-                            viewModel.showAlert.toggle()
-                        }.tag(viewModel.custom_ip)
-                        Text("Robot IP : \(settings.ip)")
-                        Divider()
-                        Button("Camera ip"){
-                            viewModel.showAlert_camera.toggle()
-                        }.tag(viewModel.custom_cam_ip)
-                        Text("Camera IP : \(settings.cam_ip)")
-                        Divider()
-                        Button("Change Fetch Rate"){
-//                            viewModel.showAlert_fetch.toggle()
-                        }
-                        
-                    }, label: {
-                        Image(systemName: "gearshape.fill")
-                            .padding()
-                            .background(Circle().fill(Material.ultraThick))
-                    }).buttonStyle(.plain)
-
-                    Button(action: {
-                        refreshView.toggle()
-                    }){
-                        Image(systemName: "arrow.trianglehead.2.clockwise.rotate.90")
-                            .padding()
-                            .background(Circle().fill(Material.ultraThick))
-                    }
-                }
-            })
+            
             .id(refreshView)
         //            .scaledToFit()
             .frame(maxWidth: .infinity, maxHeight: .infinity)
-            .onAppear{
-                refreshView.toggle()
+            
+        ZStack{
+            Color.clear
+            VStack{
+                web.aspectRatio(16/18, contentMode: .fit)
+                Spacer()
             }
-            .alert("Enter custom IP", isPresented:$viewModel.showAlert) {
-                TextField("Enter custom IP", text: $viewModel.custom_ip)
-                    .font(.caption)
-                Button("Cancel", role: .cancel, action: {})
-                Button("OK", action: {
-                    settings.ip = viewModel.custom_ip
-                })
-            } message: {
-                Text("Xcode will print whatever you type.")
+            
+        }
+        .overlay(alignment: .bottomTrailing, content: {
+            HStack{
+                Menu(content: {
+                    Button("custom"){
+                        viewModel.showAlert.toggle()
+                    }.tag(viewModel.custom_ip)
+                    Text("Robot IP : \(settings.ip)")
+                    Divider()
+                    Button("Camera ip"){
+                        viewModel.showAlert_camera.toggle()
+                    }.tag(viewModel.custom_cam_ip)
+                    Text("Camera IP : \(settings.cam_ip)")
+                    Divider()
+                    Button("Change Fetch Rate"){
+//                            viewModel.showAlert_fetch.toggle()
+                    }
+                    
+                }, label: {
+                    Image(systemName: "gearshape.fill")
+                        .padding()
+                        .background(Circle().fill(Material.ultraThick))
+                }).buttonStyle(.plain)
+
+                Button(action: {
+                    refreshView.toggle()
+                }){
+                    Image(systemName: "arrow.trianglehead.2.clockwise.rotate.90")
+                        .padding()
+                        .background(Circle().fill(Material.ultraThick))
+                }
             }
-            .alert("Enter custom camera IP", isPresented:$viewModel.showAlert_camera) {
-                TextField("Enter custom camera IP", text: $viewModel.custom_cam_ip)
-                    .font(.caption)
-                Button("Cancel", role: .cancel, action: {})
-                Button("OK", action: {
-                    settings.cam_ip = viewModel.custom_cam_ip
-                })
-            } message: {
-                Text("Xcode will print whatever you type.")
-            }
+        })
+        .onAppear{
+            refreshView.toggle()
+        }
+        .alert("Enter custom IP", isPresented:$viewModel.showAlert) {
+            TextField("Enter custom IP", text: $viewModel.custom_ip)
+                .font(.caption)
+            Button("Cancel", role: .cancel, action: {})
+            Button("OK", action: {
+                settings.ip = viewModel.custom_ip
+            })
+        } message: {
+            Text("Xcode will print whatever you type.")
+        }
+        .alert("Enter custom camera IP", isPresented:$viewModel.showAlert_camera) {
+            TextField("Enter custom camera IP", text: $viewModel.custom_cam_ip)
+                .font(.caption)
+            Button("Cancel", role: .cancel, action: {})
+            Button("OK", action: {
+                settings.cam_ip = viewModel.custom_cam_ip
+            })
+        } message: {
+            Text("Xcode will print whatever you type.")
+        }
+        
 
     }
 }

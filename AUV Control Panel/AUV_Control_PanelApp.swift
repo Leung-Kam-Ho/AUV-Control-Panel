@@ -15,14 +15,10 @@ struct AUV_Control_PanelApp: App {
     var body: some Scene {
         
         WindowGroup {
-            let placeholder =
-            Color.clear
-                .padding()
-                .background(RoundedRectangle(cornerRadius: 49).fill(.ultraThinMaterial).stroke(.white))
-                .padding()
+            
             HStack{
                 ContentView()
-                placeholder
+                
             }
             .font(.title2)
             .background(Image("Watermark"))

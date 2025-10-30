@@ -10,28 +10,36 @@ struct ContentView: View {
         
         GeometryReader{ screen in
             //Views
-            let bigEnough = UIScreen.main.traitCollection.userInterfaceIdiom == .pad
+//            let bigEnough = UIScreen.main.traitCollection.userInterfaceIdiom == .pad
+//            let height = screen.size.height
             let camera =
             Camera_WebView()
                 .padding()
                 .background(RoundedRectangle(cornerRadius: 49).fill(.ultraThinMaterial).stroke(.white))
                 .padding()
+            let controlView =
+            ControlView()
+//                .padding()
+//                .background(RoundedRectangle(cornerRadius: 49).fill(.ultraThinMaterial).stroke(.white))
+//                .padding()
             
             //Main
             HStack{
-
+                    camera
                     TabView(selection: self.$viewModel.selectedTab){
-                        if bigEnough{
-                            Tab("All", systemImage: "widget.small", value: Tabs.All){
-                                camera
-                                    
-                            }
+                        Tab("All", systemImage: "widget.small", value: Tabs.All){
+                            controlView
+                                
                         }
                         Tab("Auto",systemImage:"point.topright.filled.arrow.triangle.backward.to.point.bottomleft.scurvepath",value: Tabs.Control){
                             
                         }
                     }
-                    .tabViewStyle(.sidebarAdaptable)
+                    .padding()
+                    .background(RoundedRectangle(cornerRadius: 49).fill(.ultraThinMaterial).stroke(.white))
+                    .padding()
+                    .tabViewStyle(.tabBarOnly)
+                
             }
         }
     }
