@@ -12,23 +12,28 @@ import os
 @main
 struct AUV_Control_PanelApp: App {
     @StateObject var settings = SettingsHandler()
+    @StateObject var robotStatus = RobotStatusObject()
     var body: some Scene {
         
         WindowGroup {
-            
             HStack{
                 ContentView()
-                
             }
+            .scrollContentBackground(.hidden)
             .font(.title2)
             .background(Image("Watermark"))
-            .environmentObject(settings)
-            .scrollContentBackground(.hidden)
             .bold()
             .preferredColorScheme(.dark)
             .monospacedDigit()
-            .tabViewStyle(.sidebarAdaptable)
+            .environmentObject(settings)
+            .environmentObject(robotStatus)
+            .onReceive(robotStatus.timer, perform: { _ in
+                Logger().info("robot Fetching Status")
+                robotStatus.fetchStatus(ip: settings.ip, port: settings.port)
+            })
+//            .tabViewStyle(./*sidebarAdaptable*/)
         }
+        .defaultSize(Constants.windowMinSize)
         
     }
 }

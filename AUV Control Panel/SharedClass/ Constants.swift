@@ -15,5 +15,7 @@ enum Constants{
     static let SLOW_RATE = 2.0
     static let offWhite = Color(red: 221/255, green: 221/255, blue: 221/255)
     static let notBlack = Color(red: 33/255, green: 33/255, blue: 36/255)
+    static let windowMinSize = CGSize(width: 854, height: 480*2)
+    static let contentMinSize = CGSize(width: windowMinSize.width+10, height: windowMinSize.height+10)
 }
 

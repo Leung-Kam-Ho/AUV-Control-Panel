@@ -7,6 +7,30 @@
       "layers" : [
         {
           "glass" : false,
+          "image-name" : "Untitled.png",
+          "name" : "Untitled",
+          "position" : {
+            "scale" : 0.05,
+            "translation-in-points" : [
+              222.8047606760058,
+              -55.79626676730489
+            ]
+          }
+        },
+        {
+          "glass" : false,
+          "image-name" : "Assembly v1.png",
+          "name" : "Assembly v1",
+          "position" : {
+            "scale" : 0.4,
+            "translation-in-points" : [
+              196.20959198073683,
+              -207.4872493267706
+            ]
+          }
+        },
+        {
+          "glass" : false,
           "image-name" : "AUV_Icon v1 2.png",
           "name" : "AUV_Icon v1 2",
           "position" : {

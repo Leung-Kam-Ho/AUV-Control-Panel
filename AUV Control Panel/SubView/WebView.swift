@@ -20,31 +20,37 @@ struct Camera_WebView : View {
     var cleanUI = false
     var body: some View {
         let web = WebView(ip: "http://\(settings.cam_ip)")
-            .scaledToFit()
+//            .scaledToFit()
+            .scaledToFill()
             .clipShape(RoundedRectangle(cornerRadius: 33))
-            .disabled(true)
-            
+//            .disabled(true)
             .id(refreshView)
-        //            .scaledToFit()
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
+//            .frame(maxWidth: .infinity, maxHeight: .infinity)
             
         ZStack{
             Color.clear
             VStack{
-                web.aspectRatio(16/18, contentMode: .fit)
-                Spacer()
+                web
+                    .padding()
+//                    .aspectRatio(1, contentMode: .fill)
+//                Spacer()
             }
             
         }
+        .overlay(alignment: .bottom, content: {
+            Label("Camera View", systemImage: "person.and.background.dotted")
+                .padding()
+                .background(Capsule().fill(Material.ultraThick))
+        })
         .overlay(alignment: .bottomTrailing, content: {
             HStack{
                 Menu(content: {
-                    Button("custom"){
+                    Button("Robot IP/Hostname"){
                         viewModel.showAlert.toggle()
                     }.tag(viewModel.custom_ip)
                     Text("Robot IP : \(settings.ip)")
                     Divider()
-                    Button("Camera ip"){
+                    Button("Camera IP/Hostname"){
                         viewModel.showAlert_camera.toggle()
                     }.tag(viewModel.custom_cam_ip)
                     Text("Camera IP : \(settings.cam_ip)")
@@ -52,7 +58,6 @@ struct Camera_WebView : View {
                     Button("Change Fetch Rate"){
 //                            viewModel.showAlert_fetch.toggle()
                     }
-                    
                 }, label: {
                     Image(systemName: "gearshape.fill")
                         .padding()

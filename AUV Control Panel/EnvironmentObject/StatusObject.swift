@@ -9,11 +9,6 @@ import SwiftUI
 import os
 internal import Combine
 
-
-enum AutoMode_segment: String, CaseIterable {
-    case Manual, Standing, Lauch, Baffle, Testing
-}
-
 // Base class for status objects to avoid code duplication
 class BaseStatusObject<T>: ObservableObject where T: Decodable & Equatable {
     let objectWillChange = ObservableObjectPublisher()
@@ -35,7 +30,6 @@ class BaseStatusObject<T>: ObservableObject where T: Decodable & Equatable {
             case .success(let status):
                 DispatchQueue.main.async {
                     withAnimation(.easeInOut){
-                        
                         if self.status != status {
                             print("Status updated: \(status)")
                             
@@ -66,4 +60,21 @@ class BaseStatusObject<T>: ObservableObject where T: Decodable & Equatable {
             }
         }
     }
+}
+
+// Robot status object
+class RobotStatusObject: BaseStatusObject<RobotStatus> {
+
+    init() {
+        super.init(initialStatus: RobotStatus(), statusRoute: "/robot_status")
+    }
+    struct setMotionCommand : Encodable {
+        let twist: Twist
+    }
+
+    static func setMotion(ip: String, port: Int, twist : Twist) {
+        print("Setting motion to: \(twist)")
+        sendCommand(ip: ip, port: port, route: "/motion", data: setMotionCommand(twist: twist))
+    }
+
 }

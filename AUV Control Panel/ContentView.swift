@@ -2,48 +2,50 @@ import SwiftUI
 import os
 
 struct ContentView: View {
+    @EnvironmentObject var robotStatus: RobotStatusObject
     @EnvironmentObject var settings : SettingsHandler
     @State var viewModel = ViewModel()
     @AppStorage("MyAppTabViewCustomization")
     private var customization: TabViewCustomization
+
     var body: some View {
         
         GeometryReader{ screen in
             //Views
-            let bigEnough = UIScreen.main.traitCollection.userInterfaceIdiom == .pad
+//            let bigEnough = UIScreen.main.traitCollection.userInterfaceIdiom == .pad
+            let bigEnough = screen.size.width > Constants.contentMinSize.width && screen.size.height > Constants.contentMinSize.height
 //            let height = screen.size.height
             let camera =
             Camera_WebView()
                 .padding()
-                .background(RoundedRectangle(cornerRadius: 49).fill(.ultraThinMaterial).stroke(.white))
-                .padding()
-            let controlView =
-            ControlView()
-//                .padding()
-//                .background(RoundedRectangle(cornerRadius: 49).fill(.ultraThinMaterial).stroke(.white))
-//                .padding()
+            let controlView = ControlView()
             
             //Main
             HStack{
                 if bigEnough{
                     camera
                 }
-                    TabView(selection: self.$viewModel.selectedTab){
-                        Tab("All", systemImage: "widget.small", value: Tabs.All){
-                            controlView
-                                
-                        }
+                TabView(selection: self.$viewModel.selectedTab){
+                    Tab("Control", systemImage: "widget.small", value: Tabs.All){
+                        controlView
+                    }
+                    if !bigEnough{
                         Tab("Camera", systemImage: "camera.fill", value: Tabs.Camera){
                             camera
                         }
-                        Tab("Auto",systemImage:"point.topright.filled.arrow.triangle.backward.to.point.bottomleft.scurvepath",value: Tabs.Control){
-                            
-                        }
                     }
-                    .padding()
-                    .background(RoundedRectangle(cornerRadius: 49).fill(.ultraThinMaterial).stroke(.white))
-                    .padding()
-                    .tabViewStyle(.tabBarOnly)
+                    Tab("Auto",systemImage:"point.topright.filled.arrow.triangle.backward.to.point.bottomleft.scurvepath",value: Tabs.Control){
+                        
+                    }
+                }.clipShape(RoundedRectangle(cornerRadius: 33))
+
+                .scrollContentBackground(.hidden)
+                .toolbarBackground(.hidden, for: .tabBar)
+                .padding()
+                .background(RoundedRectangle(cornerRadius: 49).fill(.ultraThinMaterial).stroke(.white))
+                .padding()
+                
+                
                 
             }
         }
