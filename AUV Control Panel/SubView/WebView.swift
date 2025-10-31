@@ -14,6 +14,7 @@ import SwiftUI
 
 struct Camera_WebView : View {
     @EnvironmentObject var settings : SettingsHandler
+    @EnvironmentObject var robotStatus: RobotStatusObject
     @State var refreshView = false
     @State var popoverIsPresented: Bool = false
     @State var viewModel = ViewModel()
@@ -56,7 +57,7 @@ struct Camera_WebView : View {
                     Text("Camera IP : \(settings.cam_ip)")
                     Divider()
                     Button("Change Fetch Rate"){
-//                            viewModel.showAlert_fetch.toggle()
+                            viewModel.showAlert_fetch.toggle()
                     }
                 }, label: {
                     Image(systemName: "gearshape.fill")
@@ -76,6 +77,23 @@ struct Camera_WebView : View {
         .onAppear{
             refreshView.toggle()
         }
+            .alert("Slect Fetch Rate", isPresented:$viewModel.showAlert_fetch){
+                Button("\((1/Constants.SLOW_RATE)) FPS"){
+                    robotStatus.updateTimerRate(to: Constants.SLOW_RATE)
+                    Logger().info("Changed FPS to \(Constants.SLOW_RATE)")
+                }
+                Button("\((1/Constants.MEDIUM_RATE)) FPS"){
+//                    station.dataUpdateRate(Constants.MEDIUM_RATE)
+                    robotStatus.updateTimerRate(to: Constants.MEDIUM_RATE)
+                    Logger().info("Changed FPS to \(Constants.MEDIUM_RATE)")
+                }
+                Button("\((1/Constants.INTENSE_RATE)) FPS"){
+//                    station.dataUpdateRate(Constants.INTENSE_RATE)
+                    robotStatus.updateTimerRate(to: Constants.INTENSE_RATE)
+                    Logger().info("Changed FPS to \(Constants.INTENSE_RATE)")
+                }
+
+            }
         .alert("Enter custom IP", isPresented:$viewModel.showAlert) {
             TextField("Enter custom IP", text: $viewModel.custom_ip)
                 .font(.caption)

@@ -30,6 +30,7 @@ struct AUV_Control_PanelApp: App {
             .onReceive(robotStatus.timer, perform: { _ in
                 Logger().info("robot Fetching Status")
                 robotStatus.fetchStatus(ip: settings.ip, port: settings.port)
+                print(robotStatus.status.connected)
             })
 //            .tabViewStyle(./*sidebarAdaptable*/)
         }

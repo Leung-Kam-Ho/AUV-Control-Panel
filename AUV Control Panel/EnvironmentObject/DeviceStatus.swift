@@ -6,10 +6,11 @@
 //
 
 import Foundation
+internal import Combine
 
-
-@Observable
-class RobotStatus: Codable, Equatable {
+//@Observable
+class RobotStatus: Codable, ObservableObject, Equatable {
+//    let objectWillChange = ObservableObjectPublisher()
     var connected: Bool = false
     var yaw: Double = 0
     var heading: Double = 0

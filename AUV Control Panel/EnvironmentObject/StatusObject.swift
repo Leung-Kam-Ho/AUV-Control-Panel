@@ -11,7 +11,7 @@ internal import Combine
 
 // Base class for status objects to avoid code duplication
 class BaseStatusObject<T>: ObservableObject where T: Decodable & Equatable {
-    let objectWillChange = ObservableObjectPublisher()
+//    let objectWillChange = ObservableObjectPublisher()
     @Published var status: T
     private let initialStatus: T
     private let networkManager = NetworkManager.shared
@@ -45,8 +45,17 @@ class BaseStatusObject<T>: ObservableObject where T: Decodable & Equatable {
                     self.status = self.initialStatus // Reset to initial status on error
                 }
                 print(error)
+                print(result)
             }
         }
+    }
+    
+    func updateTimerRate(to newRate: TimeInterval) {
+        // Stop old timer
+        timer.upstream.connect().cancel()
+        
+        // Create new one with new rate
+        timer = Timer.publish(every: newRate, on: .main, in: .common).autoconnect()
     }
     
     static func sendCommand<V: Encodable>(ip: String, port: Int, route: String, data: V) {
