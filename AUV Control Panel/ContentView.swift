@@ -10,7 +10,7 @@ struct ContentView: View {
         
         GeometryReader{ screen in
             //Views
-//            let bigEnough = UIScreen.main.traitCollection.userInterfaceIdiom == .pad
+            let bigEnough = UIScreen.main.traitCollection.userInterfaceIdiom == .pad
 //            let height = screen.size.height
             let camera =
             Camera_WebView()
@@ -25,11 +25,16 @@ struct ContentView: View {
             
             //Main
             HStack{
+                if bigEnough{
                     camera
+                }
                     TabView(selection: self.$viewModel.selectedTab){
                         Tab("All", systemImage: "widget.small", value: Tabs.All){
                             controlView
                                 
+                        }
+                        Tab("Camera", systemImage: "camera.fill", value: Tabs.Camera){
+                            camera
                         }
                         Tab("Auto",systemImage:"point.topright.filled.arrow.triangle.backward.to.point.bottomleft.scurvepath",value: Tabs.Control){
                             
