@@ -80,10 +80,19 @@ class RobotStatusObject: BaseStatusObject<RobotStatus> {
     struct setMotionCommand : Encodable {
         let twist: Twist
     }
+    
+    struct setPIDToggleCommand : Encodable {
+        let toggle: Bool
+    }
 
     static func setMotion(ip: String, port: Int, twist : Twist) {
         print("Setting motion to: \(twist)")
         sendCommand(ip: ip, port: port, route: "/motion", data: setMotionCommand(twist: twist))
+    }
+    
+    static func setPIDToggle(ip: String, port: Int, toggle : Bool) {
+        print("Setting PID toggle to: \(toggle)")
+        sendCommand(ip: ip, port: port, route: "/pid_toggle", data: setPIDToggleCommand(toggle: toggle))
     }
 
 }

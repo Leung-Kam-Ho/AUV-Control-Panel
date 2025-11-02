@@ -13,11 +13,12 @@ struct ContentView: View {
         GeometryReader{ screen in
             //Views
 //            let bigEnough = UIScreen.main.traitCollection.userInterfaceIdiom == .pad
-            let bigEnough = screen.size.width > Constants.contentMinSize.width && screen.size.height > Constants.contentMinSize.height
+            let bigEnough = screen.size.width > Constants.contentMinSize.width && screen.size.height > Constants.contentMinSize.height || screen.size.width > screen.size.height
 //            let height = screen.size.height
             let camera =
             Camera_WebView()
                 .padding()
+                .frame(maxWidth: screen.size.width / 2)
             let controlView = ControlView()
             
             //Main
@@ -40,7 +41,6 @@ struct ContentView: View {
                 }.clipShape(RoundedRectangle(cornerRadius: 33))
 
                 .scrollContentBackground(.hidden)
-                .toolbarBackground(.hidden, for: .tabBar)
                 .padding()
                 .background(RoundedRectangle(cornerRadius: 49).fill(.ultraThinMaterial).stroke(.white))
                 .padding()

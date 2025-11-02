@@ -8,7 +8,7 @@ class NetworkManager {
     private init() {}
 
     static func createURL(ip: String, port: Int, route: String) -> URL {
-        URL(string: "http://\(ip):\(port)\(route)") ?? URL(string: "http://127.0.0.1")!
+        URL(string: "http://\(ip)\(route)") ?? URL(string: "http://127.0.0.1")!
     }
     
 

@@ -21,6 +21,7 @@ struct AUV_Control_PanelApp: App {
             }
             .scrollContentBackground(.hidden)
             .font(.title2)
+            .contentTransition(.numericText(countsDown: true))
             .background(Image("Watermark"))
             .bold()
             .preferredColorScheme(.dark)

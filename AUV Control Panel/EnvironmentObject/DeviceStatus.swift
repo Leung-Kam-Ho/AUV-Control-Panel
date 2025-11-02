@@ -15,11 +15,12 @@ class RobotStatus: Codable, ObservableObject, Equatable {
     var yaw: Double = 0
     var heading: Double = 0
     var depth: Double = 0
-    
+    var pid_enabled: Bool = false
     static func == (lhs: RobotStatus, rhs: RobotStatus) -> Bool {
         return lhs.connected == rhs.connected
         && lhs.yaw == rhs.yaw
         && lhs.heading == rhs.heading
         && lhs.depth == rhs.depth
+        && lhs.pid_enabled == rhs.pid_enabled
     }
 }

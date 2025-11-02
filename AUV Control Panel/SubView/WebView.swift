@@ -20,41 +20,47 @@ struct Camera_WebView : View {
     @State var viewModel = ViewModel()
     var cleanUI = false
     var body: some View {
-        let web = WebView(ip: "http://\(settings.cam_ip)")
+        let web = WebView(ip: viewModel.show_normal ? "http://\(settings.cam_ip)" : "http://\(settings.yolo_ip)")
 //            .scaledToFit()
-            .scaledToFill()
-            .clipShape(RoundedRectangle(cornerRadius: 33))
-//            .disabled(true)
+//            .clipShape(RoundedRectangle(cornerRadius: 33))
             .id(refreshView)
-//            .frame(maxWidth: .infinity, maxHeight: .infinity)
-            
         ZStack{
             Color.clear
             VStack{
                 web
-                    .padding()
-//                    .aspectRatio(1, contentMode: .fill)
-//                Spacer()
             }
             
         }
         .overlay(alignment: .bottom, content: {
-            Label("Camera View", systemImage: "person.and.background.dotted")
-                .padding()
-                .background(Capsule().fill(Material.ultraThick))
+            Button(action:{
+               withAnimation {
+                    viewModel.show_normal.toggle()
+                    refreshView.toggle()
+                }
+            }){
+                Label(viewModel.show_normal ? "Camera View" : "YOLO View", systemImage: "person.and.background.dotted")
+                    .padding()
+                    .background(Capsule().fill(Material.ultraThick))
+                    .padding()
+            }
         })
         .overlay(alignment: .bottomTrailing, content: {
             HStack{
                 Menu(content: {
                     Button("Robot IP/Hostname"){
                         viewModel.showAlert.toggle()
-                    }.tag(viewModel.custom_ip)
+                    }
                     Text("Robot IP : \(settings.ip)")
                     Divider()
                     Button("Camera IP/Hostname"){
                         viewModel.showAlert_camera.toggle()
-                    }.tag(viewModel.custom_cam_ip)
+                    }
                     Text("Camera IP : \(settings.cam_ip)")
+                    Divider()
+                    Button("Yolo IP/Hostname"){
+                        viewModel.showAlert_yolo.toggle()
+                    }
+                    Text("Yolo IP : \(settings.yolo_ip)")
                     Divider()
                     Button("Change Fetch Rate"){
                             viewModel.showAlert_fetch.toggle()
@@ -64,6 +70,14 @@ struct Camera_WebView : View {
                         .padding()
                         .background(Circle().fill(Material.ultraThick))
                 }).buttonStyle(.plain)
+                
+                Button(action: {
+                    settings.splitScreen.toggle()
+                }){
+                    Image(systemName: "square.split.2x1")
+                        .padding()
+                        .background(Circle().fill(Material.ultraThick))
+                }
 
                 Button(action: {
                     refreshView.toggle()
@@ -72,7 +86,7 @@ struct Camera_WebView : View {
                         .padding()
                         .background(Circle().fill(Material.ultraThick))
                 }
-            }
+            }.padding()
         })
         .onAppear{
             refreshView.toggle()
@@ -95,25 +109,36 @@ struct Camera_WebView : View {
 
             }
         .alert("Enter custom IP", isPresented:$viewModel.showAlert) {
-            TextField("Enter custom IP", text: $viewModel.custom_ip)
+            TextField("Enter custom IP", text: $settings.ip)
                 .font(.caption)
             Button("Cancel", role: .cancel, action: {})
             Button("OK", action: {
-                settings.ip = viewModel.custom_ip
+//                settings.ip = viewModel.custom_ip
             })
         } message: {
             Text("Xcode will print whatever you type.")
         }
         .alert("Enter custom camera IP", isPresented:$viewModel.showAlert_camera) {
-            TextField("Enter custom camera IP", text: $viewModel.custom_cam_ip)
+            TextField("Enter custom camera IP", text: $settings.cam_ip)
                 .font(.caption)
             Button("Cancel", role: .cancel, action: {})
             Button("OK", action: {
-                settings.cam_ip = viewModel.custom_cam_ip
+//                settings.cam_ip = viewModel.custom_cam_ip
             })
         } message: {
             Text("Xcode will print whatever you type.")
         }
+        .alert("Enter yolo IP", isPresented:$viewModel.showAlert_yolo) {
+            TextField("Enter yolo IP", text: $settings.yolo_ip)
+                .font(.caption)
+            Button("Cancel", role: .cancel, action: {})
+            Button("OK", action: {
+//                settings.cam_ip = viewModel.custom_cam_ip
+            })
+        } message: {
+            Text("Xcode will print whatever you type.")
+        }
+        
         
 
     }
@@ -171,8 +196,8 @@ extension Camera_WebView {
         var showAlert = false
         var showAlert_camera = false
         var showAlert_fetch = false
-        var custom_ip = ""
-        var custom_cam_ip = ""
+        var showAlert_yolo = false
         var show = false
+        var show_normal = true
     }
 }

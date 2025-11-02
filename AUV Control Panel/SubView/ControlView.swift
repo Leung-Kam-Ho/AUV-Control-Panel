@@ -69,38 +69,38 @@ struct ControlView: View {
                         .stroke(.white)
                 )
                 
-                Text(robotStatus.status.connected ? "\(String(describing: lastCommand? .name ?? "-"))" : "offline")
-                    .foregroundStyle(robotStatus.status.connected ? Constants.offWhite : .red)
+                Text(robotStatus.status.connected ? "Connected" : "Disconnected")
+                    .foregroundStyle(robotStatus.status.connected ? .green : .red)
                     .padding()
                     .font(.title)
                     .frame(maxWidth: .infinity, maxHeight: .infinity)
                     .contentTransition(.numericText(countsDown: true))
                     .background(
                         RoundedRectangle(cornerRadius: 33.0)
-                            .stroke(robotStatus.status.connected ? Constants.offWhite : .red)
+                            .stroke(Constants.offWhite)
                     )
                 
                 // Power control cell
                 HStack() {
-                    Text("Power")
-                        .frame(maxWidth: .infinity)
-                        .foregroundStyle(Constants.notBlack)
-                        .padding()
-                        .background(RoundedRectangle(cornerRadius: 16).fill(Constants.offWhite)) // keep layout similar
+//                    Text("Power")
+//                        .frame(maxWidth: .infinity)
+//                        .foregroundStyle(Constants.notBlack)
+//                        .padding()
+//                        .background(RoundedRectangle(cornerRadius: 16).fill(Constants.offWhite)) // keep layout similar
 
                     HStack {
                         // Editable numeric field (0–100)
                         let binding = Binding<String>(
-                            get: { String(Int((viewModel.power * 100).rounded())) },
+                            get: { String(Int((viewModel.output_power * 100).rounded())) },
                             set: { newValue in
                                 // Allow only digits; ignore others
                                 let filtered = newValue.filter { $0.isNumber }
                                 if let intVal = Int(filtered) {
                                     let clamped = max(0, min(100, intVal))
-                                    viewModel.power = Double(clamped) / 100.0
+                                    viewModel.output_power = Double(clamped) / 100.0
                                 } else if filtered.isEmpty {
                                     // If cleared, treat as 0 until valid number entered
-                                    viewModel.power = 0.0
+                                    viewModel.output_power = 0.0
                                 }
                             }
                         )
@@ -109,12 +109,12 @@ struct ControlView: View {
                             .textFieldStyle(.plain) // no background, no border
                             .keyboardType(.numberPad) // macOS ignores, iOS/iPadOS uses it
 //                            .frame(minWidth: 80, maxWidth: 120)
-                            .multilineTextAlignment(.trailing)
+                            .multilineTextAlignment(.center)
                             .onSubmit {
                                 // Ensure clamped after submit as well
-                                let pct = Int((viewModel.power * 100).rounded())
+                                let pct = Int((viewModel.output_power * 100).rounded())
                                 let clamped = max(0, min(100, pct))
-                                viewModel.power = Double(clamped) / 100.0
+                                viewModel.output_power = Double(clamped) / 100.0
                             }
 
                         Text("%")
@@ -148,7 +148,7 @@ struct ControlView: View {
                         // handle button tap here
                         print("Tapped button \(command.name)")
                         
-                        RobotStatusObject.setMotion(ip: settings.ip, port: settings.port, twist: command.twist * viewModel.power)
+                        RobotStatusObject.setMotion(ip: settings.ip, port: settings.port, twist: command.twist * viewModel.output_power)
                         withAnimation{
                             lastCommand = command
                         }
@@ -169,6 +169,39 @@ struct ControlView: View {
                     .buttonStyle(PlainButtonStyle()) // remove default button chrome
                     .keyboardShortcut(KeyEquivalent(Character(command.shortcut.lowercased())), modifiers: [])
                 }
+                ForEach(viewModel.specialCommands, id: \.self) { command in
+                    Button {
+                        // handle button tap here
+                        print("Tapped button \(command.name)")
+                        
+                        
+                        withAnimation{
+//                            lastCommand = command
+                        }
+                        
+                        switch command.name {
+                        case "PID_Toggle":
+                            RobotStatusObject.setPIDToggle(ip: settings.ip, port: settings.port, toggle: !robotStatus.status.pid_enabled)
+                        default:
+                            print("Nothing to do")
+                        }
+                    } label: {
+                        // Make label square and circular using aspectRatio
+                        Text("\(command.symbol)")
+                            .padding()
+                            .font(.largeTitle)
+                            .foregroundStyle(Constants.notBlack)
+                            .frame(maxWidth: .infinity, maxHeight: .infinity)
+                            .background(
+                                RoundedRectangle(cornerRadius: 33.0)
+                                    .fill(command.name == "PID_Toggle" ? (robotStatus.status.pid_enabled ? .green : Constants.offWhite) : Constants.offWhite)
+                                    .stroke(.white)
+                                    
+                            )
+                    }
+                    .buttonStyle(PlainButtonStyle()) // remove default button chrome
+                    .keyboardShortcut(KeyEquivalent(Character(command.shortcut.lowercased())), modifiers: [])
+                }
             }
             .padding()
         }
@@ -179,7 +212,6 @@ struct ControlView: View {
 extension ControlView{
     @Observable
     class ViewModel{
-        var power = 0.3
         struct MotionCommand: Identifiable, Hashable,Equatable {
             static func == (lhs: ControlView.ViewModel.MotionCommand, rhs: ControlView.ViewModel.MotionCommand) -> Bool {
                 return lhs.id == rhs.id
@@ -197,21 +229,43 @@ extension ControlView{
             
             
         }
+        
+        struct SpecialCommand: Identifiable, Hashable,Equatable {
+            static func == (lhs: ControlView.ViewModel.SpecialCommand, rhs: ControlView.ViewModel.SpecialCommand) -> Bool {
+                return lhs.id == rhs.id
+                && lhs.name == rhs.name
+                && lhs.symbol == rhs.symbol
+                && lhs.shortcut == rhs.shortcut
+            }
+            
+            let id = UUID()
+            let name: String
+            let symbol: String
+            let shortcut: Character
+        }
 
         let motionCommands: [MotionCommand] = [
-            MotionCommand(name: "Turn Left", symbol: "↺", shortcut: "q", twist: Twist(angular: Vector3(x:1))),
+            MotionCommand(name: "Turn Left", symbol: "↺", shortcut: "q", twist: Twist(angular: Vector3(z:1))),
             MotionCommand(name: "Forward", symbol: "▲", shortcut: "W", twist: Twist(linear: Vector3(x:1))),
-            MotionCommand(name: "Turn Right", symbol: "↻", shortcut: "e", twist: Twist(angular: Vector3(x:-1))),
+            MotionCommand(name: "Turn Right", symbol: "↻", shortcut: "e", twist: Twist(angular: Vector3(z:-1))),
             MotionCommand(name: "Left", symbol: "◀", shortcut: "a", twist: Twist(linear: Vector3(y:1))),
             MotionCommand(name: "Stop", symbol: "●", shortcut: "s", twist: Twist()),
             MotionCommand(name: "Right", symbol: "▶", shortcut: "d", twist: Twist(linear: Vector3(y:-1))),
             MotionCommand(name: "Up", symbol: "△", shortcut: "z", twist: Twist(linear: Vector3(z:1))),
             MotionCommand(name: "Backward", symbol: "▼", shortcut: "x", twist: Twist(linear: Vector3(x:-1))),
             MotionCommand(name: "Down", symbol: "▽", shortcut: "c", twist: Twist(linear: Vector3(z:-1))),
-            MotionCommand(name: "PID_Toggle", symbol: "PID", shortcut: "p", twist: Twist()),
-            MotionCommand(name: "Yaw", symbol: "Set Yaw", shortcut: "[", twist: Twist()),
-            MotionCommand(name: "Depth", symbol: "Set Depth", shortcut: "]", twist: Twist())
         ]
+        
+        let specialCommands:[SpecialCommand] = [
+            SpecialCommand(name: "PID_Toggle", symbol: "PID", shortcut: "p"),
+            SpecialCommand(name: "Yaw", symbol: "Set Yaw", shortcut: "["),
+            SpecialCommand(name: "Depth", symbol: "Set Depth", shortcut: "]")
+        ]
+        var output_power : Double = 0.2
+        init() {
+
+        }
+        
     }
 }
 
