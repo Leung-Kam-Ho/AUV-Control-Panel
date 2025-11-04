@@ -20,7 +20,7 @@ A SwiftUI-based iOS application for controlling and monitoring an Autonomous Und
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/your-username/auv-control-panel.git
+   git clone https://github.com/Leung-Kam-Ho/auv-control-panel.git
    cd auv-control-panel
    ```
 
