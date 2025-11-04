@@ -1,4 +1,6 @@
 import SwiftUI
+import AVKit
+
 
 struct ControlView: View {
     // 3 columns for a 3x3 grid
@@ -7,12 +9,22 @@ struct ControlView: View {
     @State private var viewModel = ViewModel()
     @EnvironmentObject var robotStatus : RobotStatusObject
     @EnvironmentObject var settings: SettingsHandler
+    @State var contentVideo = AVPlayer(url: Bundle.main.url(forResource: "brainrot", withExtension: "mp4")!)
+
 
     var body: some View {
         VStack {
             ZStack{
                 Color.clear
                     .padding()
+                VideoPlayer(player: contentVideo)
+//                    .frame(width: 360, height: 250)
+//                    .cornerRadius(16)
+                    .padding()
+                    .onAppear() {
+                        contentVideo.play()
+                        contentVideo.actionAtItemEnd = .none  // Loop Video
+                        }
             }
             
             LazyVGrid(columns: columns, spacing: 16) {
